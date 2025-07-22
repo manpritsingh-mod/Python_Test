@@ -7,8 +7,7 @@ pipeline {
         maven 'Maven 3.8.1'
         gradle 'Gradle 7.5'
         allure 'Allure-2.34.1'
-        // Add Python tool if configured in Jenkins
-        python 'Python-3.11'  // Uncomment and adjust version as needed
+        // Python tool will be handled via PATH environment variable
     }
     
     environment {
