@@ -18,7 +18,7 @@ pipeline {
         RUN_LINT_TESTS = ''
         // Add Python to PATH if not globally available
         PATH = "${env.PATH};C:\\Python311;C:\\Python311\\Scripts"  // Adjust path as needed
-    
+    }
     
     stages {
         stage('Setup and Execution') {
