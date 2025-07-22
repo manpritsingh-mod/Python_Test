@@ -7,6 +7,8 @@ pipeline {
         maven 'Maven 3.8.1'
         gradle 'Gradle 7.5'
         allure 'Allure-2.34.1'
+        // Add Python tool if configured in Jenkins
+        python 'Python-3.11'  // Uncomment and adjust version as needed
     }
     
     environment {
@@ -14,7 +16,9 @@ pipeline {
         BUILD_TOOL = ''
         RUN_UNIT_TESTS = ''
         RUN_LINT_TESTS = ''
-    }
+        // Add Python to PATH if not globally available
+        PATH = "${env.PATH};C:\\Python311;C:\\Python311\\Scripts"  // Adjust path as needed
+    
     
     stages {
         stage('Setup and Execution') {
