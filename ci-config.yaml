@@ -1,12 +1,12 @@
 # Basic CI/CD Configuration File
-project_language: "java-maven"
+project_language: "python"
 runUnitTests: true
 runLintTests: true
 
 tool_for_unit_testing:
-  java: "junit"
+  python: "pytest"
 tool_for_lint_testing:
-  java: "checkstyle"
+  python: "pylint"
 
 # Basic Notification Configuration
 notifications:
@@ -27,10 +27,12 @@ notifications:
 
 # Report Configuration
 reports:
-  allure:
+  pytest:
     enabled: true
-    results_path: "allure-results"
-    report_path: "allure-report"
+    results_path: "test-results"
+    report_path: "htmlcov"
+    coverage: true
   lint:
     enabled: true
-    checkstyle_xml: "target/checkstyle-result.xml"
+    pylint_output: "pylint-report.txt"
+    format: "text"
