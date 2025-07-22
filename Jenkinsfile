@@ -7,7 +7,7 @@ pipeline {
         maven 'Maven 3.8.1'
         gradle 'Gradle 7.5'
         allure 'Allure-2.34.1'
-        // Python tool will be handled via PATH environment variable
+        python 'Python-3.11'
     }
     
     environment {
@@ -15,8 +15,9 @@ pipeline {
         BUILD_TOOL = ''
         RUN_UNIT_TESTS = ''
         RUN_LINT_TESTS = ''
-        // Add Python to PATH if not globally available
-        PATH = "${env.PATH};C:\\Python311;C:\\Python311\\Scripts"  // Adjust path as needed
+        // Ensure Python is in PATH
+        PATH = "${env.PATH};C:\\Python311;C:\\Python311\\Scripts"
+        PYTHON_HOME = "C:\\Python311"
     }
     
     stages {
@@ -31,6 +32,9 @@ pipeline {
                     if (config && !config.isEmpty()) {
                         core_utils.setupEnvironment()
                         logger.info("Global environment setup completed")
+                        
+                        // Verify Python installation
+                        bat 'C:\\Python311\\python.exe --version'
                         
                         // Call template
                         logger.info("Calling template for: ${config.project_language}")
