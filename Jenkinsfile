@@ -7,7 +7,7 @@ pipeline {
         maven 'Maven 3.8.1'
         gradle 'Gradle 7.5'
         allure 'Allure-2.34.1'
-        python 'Python-3.13'
+        'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'Python-3.13'
     }
     
     environment {
