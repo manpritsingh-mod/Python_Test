@@ -1,97 +1,61 @@
-@Library('My_UnifiedCI') _
-
+// Jenkinsfile — PYTHON TEST FAILURE scenario
+// Simulates: pytest assertion failure
 pipeline {
     agent any
-    
-    tools {
-        maven 'Maven 3.8.1'
-        gradle 'Gradle 7.5'
-        allure 'Allure-2.34.1'
-        'jenkins.plugins.shiningpanda.tools.PythonInstallation' 'Python-3.13'
-    }
-    
-    environment {
-        PROJECT_LANGUAGE = ''
-        BUILD_TOOL = ''
-        RUN_UNIT_TESTS = ''
-        RUN_LINT_TESTS = ''
-        // Ensure Python is in PATH
-        PATH = "${env.PATH};C:\\Python311;C:\\Python311\\Scripts"
-        PYTHON_HOME = "C:\\Python311"
-    }
-    
+
     stages {
-        stage('Setup and Execution') {
+        stage('Checkout') {
             steps {
-                script {
-                    logger.info("---- STAGE: SETUP AND EXECUTION ----")
-                    
-                    def config = core_utils.readProjectConfig()
-                    logger.info("Config map content: ${config}")
-                    
-                    if (config && !config.isEmpty()) {
-                        core_utils.setupEnvironment()
-                        logger.info("Global environment setup completed")
-                        
-                        // Verify Python installation
-                        bat 'C:\\Python311\\python.exe --version'
-                        
-                        // Call template
-                        logger.info("Calling template for: ${config.project_language}")
-                        switch (config.project_language) {
-                            case 'java-maven':
-                                javaMaven_template(config)
-                                break
-                            case 'java-gradle':
-                                javaGradle_template(config)
-                                break
-                            case 'python':
-                                python_template(config)
-                                break
-                            default:
-                                error("Unsupported project language: ${config.project_language}")
-                        }
-                        
-                        logger.info("Project template execution completed")
-                    } else {
-                        error("PROJECT_CONFIG is empty or missing")
-                    }
-                }
+                echo 'Checking out source code...'
+                echo 'Fetching origin/main...'
+                echo 'HEAD is now at 8b4d92a fix typo'
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing python dependencies with pip...'
+                echo 'Successfully installed pytest-8.1.1 requests-2.31.0'
+            }
+        }
+
+        stage('Unit Tests') {
+            steps {
+                echo 'Running pytest...'
+                echo '============================= test session starts =============================='
+                echo 'platform linux -- Python 3.10.12, pytest-8.1.1, pluggy-1.4.0'
+                echo 'rootdir: /workspace'
+                echo 'collected 3 items'
+                echo ''
+                echo 'tests/test_calculator.py ..F                                             [100%]'
+                echo ''
+                echo '=================================== FAILURES ==================================='
+                echo '_____________________________ test_divide_by_zero ______________________________'
+                echo ''
+                echo '    def test_divide_by_zero():'
+                echo '>       assert divide(10, 0) == "Error"'
+                echo 'E       ZeroDivisionError: division by zero'
+                echo ''
+                echo 'src/calculator.py:15: ZeroDivisionError'
+                echo '=========================== short test summary info ============================'
+                echo 'FAILED tests/test_calculator.py::test_divide_by_zero - ZeroDivisionError: division by zero'
+                echo '========================= 1 failed, 2 passed in 0.15s =========================='
+                echo '[ERROR] pytest failed with exit code 1'
+                error('Unit tests failed: 1 failure')
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                echo 'Deploying to staging...'
             }
         }
     }
+
     post {
-        always {
-            script {
-                logger.info("=== SENDING NOTIFICATIONS ===")
-                def buildStatus = currentBuild.result ?: 'SUCCESS'
-                def config = [
-                    notifications: [
-                        email: [recipients: ["smanprit022@gmail.com"]]
-                    ]
-                ]
-                
-                notify.notifyBuildStatus(buildStatus, config)
-                logger.info("Notification sent successfully")
-            }
-        }
-        
-        success {
-            script {
-                logger.info("BUILD SUCCESSFUL!")
-            }
-        }
-        
         failure {
-            script {
-                logger.error("BUILD FAILED!")
-            }
-        }
-        
-        unstable {
-            script {
-                logger.warning("BUILD UNSTABLE!")
-            }
+            echo '❌ Tests failed! Triggering self-healing via webhook...'
+            // In a real pipeline, we'd fire the webhook here.
         }
     }
 }
